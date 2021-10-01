@@ -34,6 +34,7 @@ use OCP\Authentication\TwoFactorAuth\IProvider;
 use OCP\Authentication\TwoFactorAuth\IProvidesIcons;
 use OCP\Authentication\TwoFactorAuth\IProvidesPersonalSettings;
 use OCP\IL10N;
+use OCP\Defaults;
 use OCP\ISession;
 use OCP\IUser;
 use OCP\Security\ISecureRandom;
@@ -63,6 +64,9 @@ abstract class AProvider implements IProvider, IProvidesIcons, IProvidesPersonal
 	/** @var IL10N */
 	protected $l10n;
 
+	/** @var Defaults */
+	protected $defaults;
+
 	private function getSessionKey() {
 		return "twofactor_gateway_" . $this->gatewayName . "_secret";
 	}
@@ -72,13 +76,15 @@ abstract class AProvider implements IProvider, IProvidesIcons, IProvidesPersonal
 								StateStorage $stateStorage,
 								ISession $session,
 								ISecureRandom $secureRandom,
-								IL10N $l10n) {
+								IL10N $l10n,
+								Defaults $defaults) {
 		$this->gateway = $gateway;
 		$this->gatewayName = $gatewayId;
 		$this->stateStorage = $stateStorage;
 		$this->session = $session;
 		$this->secureRandom = $secureRandom;
 		$this->l10n = $l10n;
+		$this->defaults = $defaults;
 	}
 
 	/**
@@ -107,12 +113,15 @@ abstract class AProvider implements IProvider, IProvidesIcons, IProvidesPersonal
 
 		try {
 			$identifier = $this->stateStorage->get($user, $this->gatewayName)->getIdentifier();
+			$translated_template = $this->l10n->t('%s is your Nextcloud authentication code', [
+					$secret
+				]);
+			$message = str_replace('Nextcloud', $this->defaults->getName(), $translated_template);
+			
 			$this->gateway->send(
 				$user,
 				$identifier,
-				$this->l10n->t('%s is your Nextcloud authentication code', [
-					$secret
-				])
+				$message
 			);
 		} catch (SmsTransmissionException $ex) {
 			return new Template('twofactor_gateway', 'error');

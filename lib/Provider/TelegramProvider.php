@@ -25,6 +25,7 @@ namespace OCA\TwoFactorGateway\Provider;
 
 use OCA\TwoFactorGateway\Service\Gateway\Telegram\Gateway;
 use OCA\TwoFactorGateway\Service\StateStorage;
+use OCP\Defaults;
 use OCP\IL10N;
 use OCP\ISession;
 use OCP\Security\ISecureRandom;
@@ -34,14 +35,16 @@ class TelegramProvider extends AProvider {
 								StateStorage $stateStorage,
 								ISession $session,
 								ISecureRandom $secureRandom,
-								IL10N $l10n) {
+								IL10N $l10n,
+								Defaults $defaults) {
 		parent::__construct(
 			'telegram',
 			$smsGateway,
 			$stateStorage,
 			$session,
 			$secureRandom,
-			$l10n
+			$l10n,
+			$defaults
 		);
 	}
 
