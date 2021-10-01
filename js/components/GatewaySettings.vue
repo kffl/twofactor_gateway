@@ -1,13 +1,9 @@
 <template>
 	<div>
-		<div v-if="!isAvailable">
-			<L10n text="The {displayName} gateway is not configured."
-				  :options="{displayName: displayName}"/>
-		</div>
-		<div v-else-if="loading">
+		<div v-if="loading">
 			<span class="icon-loading-small"></span>
 		</div>
-		<div v-else>
+		<div v-else-if="isAvailable">
 			<p v-if="state === 0">
 				<slot name="instructions"/>
 				<L10n text="You are not using {displayName} for two-factor authentication at the moment."

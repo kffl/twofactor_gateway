@@ -150,11 +150,16 @@ abstract class AProvider implements IProvider, IProvidesIcons, IProvidesPersonal
 	 * Decides whether 2FA is enabled for the given user
 	 */
 	public function isTwoFactorAuthEnabledForUser(IUser $user): bool {
-		return $this->stateStorage->get($user, $this->gatewayName)->getState() === self::STATE_ENABLED;
+		return $this->stateStorage->get($user, $this->gatewayName)->getState() === self::STATE_ENABLED &&
+			   $this->gateway->getConfig()->isComplete();
 	}
 
 	public function getPersonalSettings(IUser $user): IPersonalProviderSettings {
-		return new PersonalSettings($this->gatewayName);
+		if ($this->gateway->getConfig()->isComplete()) {
+			return new PersonalSettings($this->gatewayName);
+		} else {
+			return new PersonalSettings('NOT_CONFIGURED');
+		}
 	}
 
 	public function getLightIcon(): String {

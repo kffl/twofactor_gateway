@@ -41,8 +41,12 @@ class PersonalSettings implements IPersonalProviderSettings {
 	 * @since 15.0.0
 	 */
 	public function getBody(): Template {
-		$tmpl = new Template('twofactor_gateway', 'personal_settings');
-		$tmpl->assign('gateway', $this->gateway);
-		return $tmpl;
+		if ($this->gateway === 'NOT_CONFIGURED') {
+			return new Template('twofactor_gateway', 'provider_not_configured');
+		} else {
+			$tmpl = new Template('twofactor_gateway', 'personal_settings');
+			$tmpl->assign('gateway', $this->gateway);
+			return $tmpl;
+		}
 	}
 }
